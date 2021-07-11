@@ -1,5 +1,5 @@
 """
-In this Project i will follow NeuralNine tutorial on Algorithmic Trading Strategy
+In this Project I will follow NeuralNine tutorial on Algorithmic Trading Strategy
 To automatic trade stocks with Python Code.
 In the first part of this project i will only follow his code and after that I am going to implement
 some personal ideas that I have (For example, send email messages to warn about the stock)
@@ -28,23 +28,24 @@ plt.style.use('dark_background')
 
 # -------------- Defining the parameters -------------------
 ma_1 = 30   # 30 Days of Moving Average
-ma_2 = 90  # 100 Days of Moving Average
+ma_2 = 90  # 90 Days of Moving Average
 
-# Let's define the time frame. That how much time we are going to look back into the past
+# Let's define the time frame. How much time we are going to look back into the past
 years = 3   # How many years
 start = str(dt.datetime.now().date() - dt.timedelta(days=365 * years))  # Starting date
 end = str(dt.datetime.now().date()) #    Ending date (now)
 # Let's get the data through the Pandas DataReader and the Yahoo Finance API.
 company = 'TSLA'
 
+# Creating a email configuration
 def config_email(text,image_name=None):
     with open(image_name, 'rb') as f:
         img_data = f.read()
 
     msg = MIMEMultipart()
     msg['Subject'] = 'Relatório Diário'
-    msg['From'] = 'michelarrudala@gmail.com'
-    msg['To'] = 'viniciusfarah42@gmail.com'
+    msg['From'] = 'Your email here'
+    msg['To'] = 'Destination email here'
 
     text = MIMEText(f'{text}')
     msg.attach(text)
@@ -58,8 +59,8 @@ def send_email(msg):
     s.starttls()
     s.ehlo()
 
-    s.login('michelarrudala@gmail.com',
-            '86558179')
+    s.login('Your email here',
+            'Your password here')
 
     s.sendmail(msg['From'],
                msg['To'], msg.as_string())
