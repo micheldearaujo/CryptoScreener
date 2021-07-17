@@ -13,6 +13,7 @@ We will sell or buy the stock.
 """
 
 import datetime as dt
+import pandas as pd
 import matplotlib.pyplot as plt
 import pandas_datareader as web     # Tradicional, in the tutorial, but not working right now
 import yfinance as yf               # Alternative
@@ -33,7 +34,7 @@ ma_2 = 90  # 90 Days of Moving Average
 # Let's define the time frame. How much time we are going to look back into the past
 years = 3   # How many years
 start = str(dt.datetime.now().date() - dt.timedelta(days=365 * years))  # Starting date
-end = str(dt.datetime.now().date()) #    Ending date (now)
+end = str(dt.datetime.now().date()) # Ending date (now)
 # Let's get the data through the Pandas DataReader and the Yahoo Finance API.
 company = 'TSLA'
 
@@ -43,8 +44,9 @@ def config_email(text,image_name=None):
         img_data = f.read()
 
     msg = MIMEMultipart()
+    keys = open('D:/Projects/emails.txt', 'r').read().splitlines()
     msg['Subject'] = 'Relatório Diário'
-    msg['From'] = 'Your email here'
+    msg['From'] = keys[0]
     msg['To'] = 'Destination email here'
 
     text = MIMEText(f'{text}')
@@ -59,8 +61,9 @@ def send_email(msg):
     s.starttls()
     s.ehlo()
 
-    s.login('Your email here',
-            'Your password here')
+    keys = open('./data/emails.txt', 'r').read().splitlines()
+    s.login(keys[0],
+            keys[1])
 
     s.sendmail(msg['From'],
                msg['To'], msg.as_string())
@@ -71,6 +74,7 @@ def get_data(company_name, start_date, end_date):
     data = yf.Ticker(company_name).history(start=start_date, end=end_date) # Getting the data from the yfinance API
     print(data)
 
+
     # Calculate the moving averages
     data[f'SMA_{ma_1}'] = data['Close'].rolling(window=ma_1).mean()
     data[f'SMA_{ma_2}'] = data['Close'].rolling(window=ma_2).mean()
@@ -78,9 +82,14 @@ def get_data(company_name, start_date, end_date):
     # Filtering the data to start in at the bigger moving average days, because before that there are no values
     data = data.iloc[ma_2:]
 
+    data.to_csv(f'./data/{company}.csv')
     return(data)
 
-data = get_data(company, start, end)
+def get_data_off(company):
+    data = pd.read_csv(f'./data/{company}.csv')
+    return data
+data = get_data_off(company)
+#data = get_data(company, start, end)
 
 # Plotting the values
 def plot_initial(data):
@@ -110,9 +119,9 @@ for x in range(len(data)):
         sell_signals.append(float('nan'))
         trigger = 1
 
-        msg = config_email(text=f"Opa meu amigo! Estou aqui olhando as ações da {company} e na data {data.index[x]} você deve"
-                           f"vender todas as suas ações, cada uma por {data['Close'].iloc[x]}")
-        send_email(msg)
+        #msg = config_email(text=f"Opa meu amigo! Estou aqui olhando as ações da {company} e na data {data.index[x]} você deve"
+         #                  f"vender todas as suas ações, cada uma por {data['Close'].iloc[x]}")
+        #send_email(msg)
 
         # That will happen only if the trigger is not equal to one. Equal to 1 means that the last signal was a 'buy'
         # And we don't want to perform the same action twice.
@@ -125,9 +134,9 @@ for x in range(len(data)):
         sell_signals.append(data['Close'].iloc[x])
         trigger = -1
 
-        msg = config_email(text=f"Opa meu amigo! Estou aqui olhando as ações da {company} e na data {data.index[x]} você deve"
-                           f"comprar ações, cada uma por {data['Close'].iloc[x]}")
-        send_email(msg)
+        #msg = config_email(text=f"Opa meu amigo! Estou aqui olhando as ações da {company} e na data {data.index[x]} você deve"
+         #                  f"comprar ações, cada uma por {data['Close'].iloc[x]}")
+        #send_email(msg)
 
     # If nothing happens, append a 'nan' to the row.
     else:
@@ -174,6 +183,7 @@ InitialPrice = data['Close'].iloc[0]
 # It its necessary to check the trigger. If the last action was a buying action, we need to set the final price
 # as the last price in the data.
 # But if the last action was a selling action, then we do not need to modify the sum.
+
 if trigger==1: # Bought
     FinalPrice = data['Close'].iloc[len(data) -1]
     TotalProfit = round(TotalSold - TotalBought + FinalPrice, 2)
@@ -203,12 +213,12 @@ plt.legend(loc='upper left')
 plt.grid(alpha=0.2)
 plt.show()
 image_name = 'stocks.png'
-fig.savefig(image_name)
+fig.savefig('data/' + image_name)
 
-msg = config_email(image_name=image_name, text=f"Opa meu amigo! Terminamos aqui a análise do período indicado e temos os seguintes resultados.\n"
-                        f"'Total Profit per Share: U${TotalProfit} \n"
-                        f"Percentage Profit: {PercentageProfit}%")
-send_email(msg)
+#msg = config_email(image_name=image_name, text=f"Opa meu amigo! Terminamos aqui a análise do período indicado e temos os seguintes resultados.\n"
+ #                       f"'Total Profit per Share: U${TotalProfit} \n"
+  #                      f"Percentage Profit: {PercentageProfit}%")
+#send_email(msg)
 
 
 
