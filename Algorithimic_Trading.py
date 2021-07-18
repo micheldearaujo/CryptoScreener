@@ -84,7 +84,8 @@ class Trader:
 
     def get_data(self, company_name, start_date, end_date, ma_1, ma_2):
         # data = web.DataReader(company, 'yahoo', start, end)
-        self.data = yf.Ticker(company_name).history(start=start_date, end=end_date) # Getting the data from the yfinance API
+        # Getting the data from the yfinance API
+        self.data = yf.Ticker(company_name).history(start=start_date, end=end_date)
         print(self.data)
 
         # Calculate the moving averages
@@ -93,7 +94,6 @@ class Trader:
 
         # Filtering the data to start in at the bigger moving average days, because before that there are no values
         self.data = self.data.iloc[ma_2:]
-        #self.data.reset_index(inplace=True)
         self.data.to_csv(f'./data/{self.company_name}.csv')
         return self.data
 
