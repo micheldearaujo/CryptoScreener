@@ -15,6 +15,9 @@ from time import sleep
 import datetime as dt
 import csv
 import pandas as pd
+import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
 
 path = 'C:\Program Files (x86)\chromedriver.exe'
 url = 'https://finance.yahoo.com/cryptocurrencies'
@@ -53,10 +56,15 @@ def get_data(period, symbols, pos):
             print(stocks)
 
             counter += 1
-            print(counter)
+
+        plt.plot(stocks['Date'], stocks['Price'])
+        plt.title(f"{stocks['Symbol']} price")
+        plt.show()
+        plt.pause(1)
+
         sleep(period)
 
-file_name = 'BTC'
+
 period = 60
 symbols = ['BTC', 'ETH', 'ADA', 'DOGE', 'LTC']
 pos = [1, 2, 5, 9, 13]
@@ -66,3 +74,5 @@ pos = [1, 2, 5, 9, 13]
 
 # Executing the loop
 get_data(period, symbols, pos)
+
+
