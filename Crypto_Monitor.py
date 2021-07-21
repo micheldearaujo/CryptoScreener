@@ -5,7 +5,8 @@ And make some decisions about it (Maybe daytrade)
 This strategy works as follows: We're going to calculate 2 moving averages and when this averages cross
 We will sell or buy the stock.
 
-@micheldearaujo
+@micheldearaujo     created at SUN 2021 July 18 20:30
+
 """
 
 import requests
@@ -19,6 +20,8 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+
+
 
 path = 'C:\Program Files (x86)\chromedriver.exe'
 url = 'https://finance.yahoo.com/cryptocurrencies'
@@ -42,6 +45,8 @@ def get_data(period, symbols, pos):
 
         fig = make_subplots(rows=5, cols=1,
                             subplot_titles=('BTC', 'ETH', 'ADA', 'DOGE', 'LTC'))
+
+        # I have setup this counter variable to select the differents ticker symbols names
         counter = 0
         for j in pos:
 
@@ -72,6 +77,8 @@ def get_data(period, symbols, pos):
 def verify_condition(self):
     pass
 
+def plot_data():
+    pass
 
 period = 60
 symbols = ['BTC', 'ETH', 'ADA', 'DOGE', 'LTC']
