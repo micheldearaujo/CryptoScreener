@@ -18,6 +18,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 path = 'C:\Program Files (x86)\chromedriver.exe'
 url = 'https://finance.yahoo.com/cryptocurrencies'
@@ -30,6 +31,7 @@ def create_csv(file_name):
     f.close()
 
 
+# Creating a function that gets the cryptocurrencies information with a certain frequency
 def get_data(period, symbols, pos):
 
     driver = webdriver.Chrome(path)
@@ -38,6 +40,8 @@ def get_data(period, symbols, pos):
 
     while True:
 
+        fig = make_subplots(rows=5, cols=1,
+                            subplot_titles=('BTC', 'ETH', 'ADA', 'DOGE', 'LTC'))
         counter = 0
         for j in pos:
 
@@ -55,19 +59,24 @@ def get_data(period, symbols, pos):
             stocks = pd.read_csv(f'./data/{symbols[counter]}.csv')
             print(stocks)
 
+            """ fig.add_trace(
+                go.Scatter(x=stocks['Date'], y=stocks['Price']),
+                row=counter+1, col=1) """
+
             counter += 1
 
-        plt.plot(stocks['Date'], stocks['Price'])
-        plt.title(f"{stocks['Symbol']} price")
-        plt.show()
-        plt.pause(1)
-
+        """ fig.update_layout(title_text='Some cryptocurrencies information in real time')
+        fig.show() """
         sleep(period)
+
+def verify_condition(self):
+    pass
 
 
 period = 60
 symbols = ['BTC', 'ETH', 'ADA', 'DOGE', 'LTC']
 pos = [1, 2, 5, 9, 13]
+
 # Creating a new csv
 # for symbol in symbols:
 #     create_csv(f'./data/{symbol}.csv')
