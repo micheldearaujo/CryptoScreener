@@ -10,7 +10,7 @@ def animate(i):
     plt.cla()
     plt.plot(x, y, label='Litecoin Price today')
     plt.xlabel('Time')
-    plt.ylabel('Price')
+    plt.ylabel('Price (USD)')
     plt.title('Litecoin Price')
 
     plt.legend(loc='upper left')

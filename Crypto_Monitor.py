@@ -23,31 +23,47 @@ class Database():
     def __init__(self):
         pass
 
+    def connect_database(self):
+        print("Connecting to the Crypto database")
 
-    def to_database():
-        pass
+        self.conn = psycopg2.connect(
+                                host="localhost",
+                                database="Crypto",
+                                user="postgres",
+                                password="root"
+        )
 
+        self.cur = self.conn.cursor()
+
+
+    def to_database(self, table_name, date, symbol, name, price, change):
+        self.connect_database()
+
+        insert = f"""
+                    INSERT INTO {table_name} (date, symbol, name, price, change)
+                    values (
+                            '{date}',
+                            '{symbol}',
+                            '{name}',
+                           '{price}',
+                            '{change}'
+                            );
+                    """
+        
+        self.cur.execute(insert)
+        self.conn.commit()
+
+        self.cur.close()
+        self.conn.close()
     
-    def update_database():
-        pass
-
-
-    def remove_database():
-        pass
-
-# Defining a function to plot the streaming data
-""" def plot_data(stocks):
-    line.set_xdata(stocks['Date']) # Updating the values without create another canvas
-    line.set_ydata(stocks['Price'])
-    return line, """
-
 
 # Creating a function that gets the cryptocurrencies information with a certain frequency
 def get_data(period, symbols, pos):
 
+    db = Database()
     driver = webdriver.Chrome(path)
     driver.get(url)
-    sleep(4)
+    sleep(2)
 
     while True:
 
@@ -67,6 +83,11 @@ def get_data(period, symbols, pos):
             writer = csv.writer(f)
             writer.writerow((date, symbol, name, price, change))
             f.close()
+
+            # Writing down the new information into the database
+            print("Wrinting to DB")
+            db.to_database(symbols[counter].lower(), date, symbol, name, price, change)
+
 
             # Reading the data from the CSV because it is already organized as a dataframe
             stocks = pd.read_csv(f'./data/{symbols[counter]}.csv')

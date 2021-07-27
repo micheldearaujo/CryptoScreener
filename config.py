@@ -13,11 +13,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
+import psycopg2
 
 path = 'C:\Program Files (x86)\chromedriver.exe'
 url = 'https://finance.yahoo.com/cryptocurrencies'
 
 
 period = 3
-symbols = ['BTC', 'ETH', 'ADA', 'DOGE', 'LTC']
-pos = [1, 2, 5, 9, 13]
+symbols = ['BTC', 'ADA', 'DOGE', 'LTC']
+pos = [1, 5, 8, 13]
