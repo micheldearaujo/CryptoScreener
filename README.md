@@ -1,10 +1,11 @@
 <hr>
 <div>
+
 # Cryptocurrencies Screener
 
 In this project I am creating a system for monitoring some list of cryptocurrencies daily and send a automatic email at the end of the day with the most import informations. <br>
 </div>
-<hr>
+
 
 <hr>
 <div>
