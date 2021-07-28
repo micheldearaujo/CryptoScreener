@@ -76,6 +76,7 @@ def get_data(period, symbols, pos):
             symbol = driver.find_element_by_xpath(f'//*[@id="scr-res-table"]/div[1]/table/tbody/tr[{j}]/td[1]/a').text
             name = driver.find_element_by_xpath(f'//*[@id="scr-res-table"]/div[1]/table/tbody/tr[{j}]/td[2]').text
             price = driver.find_element_by_xpath(f'//*[@id="scr-res-table"]/div[1]/table/tbody/tr[{j}]/td[3]/span').text
+            price = float(''.join(price.split(','))) # casting it into a number
             change = driver.find_element_by_xpath(f'//*[@id="scr-res-table"]/div[1]/table/tbody/tr[{j}]/td[5]/span').text
 
             # Saving the information in a CSV file
@@ -85,7 +86,7 @@ def get_data(period, symbols, pos):
             f.close()
 
             # Writing down the new information into the database
-            print("Wrinting to DB")
+            print("Writing to DB")
             db.to_database(symbols[counter].lower(), date, symbol, name, price, change)
 
 

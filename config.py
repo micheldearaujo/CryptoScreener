@@ -18,7 +18,14 @@ import psycopg2
 path = 'C:\Program Files (x86)\chromedriver.exe'
 url = 'https://finance.yahoo.com/cryptocurrencies'
 
-
+# Frequency of reading
 period = 3
+
+# Some Cryptocurrencies to watch
 symbols = ['BTC', 'ADA', 'DOGE', 'LTC']
-pos = [1, 5, 8, 13]
+names = ['Bitcoin', 'Cardano', 'Dogecoin', 'Litecoin']
+pos = [1, 5, 7, 13]
+
+# Moving averages in seconds
+ma_1 = 30
+ma_2 = 90
