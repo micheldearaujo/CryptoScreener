@@ -9,6 +9,7 @@ In this project I am creating a system for monitoring some list of cryptocurrenc
 
 <hr>
 <div>
+
 In this first part of the project I created a screening system that scrapes data in real time from the [Yahoo Finance](https://finance.yahoo.com/cryptocurrencies) website using Selenium (I just could not make it work with BeautifulSoup yet) and plots the cryptocurrencies prices together with two moving averages. Those moving averages will be used the second part of the project, that is to create a simple algorithmic trading system based on the moving averages. Bellow you can see a screenshot of the screener.
 
 <p align="center">
