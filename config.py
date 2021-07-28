@@ -29,3 +29,4 @@ pos = [1, 5, 7, 13]
 # Moving averages in seconds
 ma_1 = 30
 ma_2 = 90
+

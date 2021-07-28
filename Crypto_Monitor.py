@@ -100,14 +100,12 @@ def get_data(period, symbols, pos):
         sleep(period)
 
 
-# Creating a function that verifies if the prices follows some conditions
-def verify_condition(self):
-    pass
+
 
 
 # Creating a new csv
-for symbol in symbols:
-    create_csv(f'./data/{symbol}.csv')
+""" for symbol in symbols:
+    create_csv(f'./data/{symbol}.csv') """
 
 # Executing the loop
 get_data(period, symbols, pos)
