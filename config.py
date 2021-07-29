@@ -27,6 +27,6 @@ names = ['Bitcoin', 'Cardano', 'Dogecoin', 'Litecoin']
 pos = [1, 5, 7, 13]
 
 # Moving averages in seconds
-ma_1 = 30
-ma_2 = 90
+ma_1 = 90
+ma_2 = 150
 
