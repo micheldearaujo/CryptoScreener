@@ -15,22 +15,14 @@ We will sell or buy the stock.
 import datetime as dt
 import pandas as pd
 import matplotlib.pyplot as plt
-import pandas_datareader as web     # Tradicional, in the tutorial, but not working right now
 import yfinance as yf               # Alternative
-import smtplib
-from base64 import b64encode
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-import sys
-import os
 
 plt.style.use('dark_background')
 
 
 # -------------- Defining the parameters -------------------
-ma_1 = 30   # 30 Days of Moving Average
-ma_2 = 90  # 90 Days of Moving Average
+ma_1 = 7
+ma_2 = 15
 
 # Let's define the time frame. How much time we are going to look back into the past
 years = 3   # How many years
@@ -49,39 +41,6 @@ class Trader:
     def __init__(self, company_name):
         self.company_name = company_name
 
-    # Creating a email configuration
-    @staticmethod
-    def config_email(self, text, image_name=None):
-        with open(image_name, 'rb') as f:
-            img_data = f.read()
-
-        msg = MIMEMultipart()
-        keys = open('D:/Projects/emails.txt', 'r').read().splitlines()
-        msg['Subject'] = 'Relatório Diário'
-        msg['From'] = keys[0]
-        msg['To'] = 'Destination email here'
-
-        text = MIMEText(f'{text}')
-        msg.attach(text)
-        image = MIMEImage(img_data, name=os.path.basename(image_name))
-        msg.attach(image)
-        return msg
-
-    @staticmethod
-    def send_email(self, msg):
-        s = smtplib.SMTP('smtp.gmail.com', 587)
-        s.ehlo()
-        s.starttls()
-        s.ehlo()
-
-        keys = open('./data/emails.txt', 'r').read().splitlines()
-        s.login(keys[0],
-                keys[1])
-
-        s.sendmail(msg['From'],
-                   msg['To'], msg.as_string())
-        s.quit()
-
     def get_data(self, company_name, start_date, end_date, ma_1, ma_2):
         # data = web.DataReader(company, 'yahoo', start, end)
         # Getting the data from the yfinance API
@@ -97,7 +56,7 @@ class Trader:
         self.data.to_csv(f'./data/{self.company_name}.csv')
         return self.data
 
-    def get_data_off(self):
+    def get_data_offline(self):
         self.data = pd.read_csv(f'./data/{self.company_name}.csv')
         return self.data
 
@@ -127,10 +86,6 @@ class Trader:
                 self.sell_signals.append(float('nan'))
                 self.trigger = 1
 
-                # msg = config_email(text=f"Opa meu amigo! Estou aqui olhando as ações da {company} e na data {data.index[x]} você deve"
-                #                  f"vender todas as suas ações, cada uma por {data['Close'].iloc[x]}")
-                # send_email(msg)
-
                 # That will happen only if the trigger is not equal to one. Equal to 1 means that the last signal was a 'buy'
                 # And we don't want to perform the same action twice.
 
@@ -142,10 +97,6 @@ class Trader:
                 self.sell_signals.append(data['Close'].iloc[x])
                 self.trigger = -1
 
-                # msg = config_email(text=f"Opa meu amigo! Estou aqui olhando as ações da {company} e na data {data.index[x]} você deve"
-                #                  f"comprar ações, cada uma por {data['Close'].iloc[x]}")
-                # send_email(msg)
-
             # If nothing happens, append a 'nan' to the row.
             else:
                 self.buy_signals.append(float('nan'))
@@ -153,18 +104,18 @@ class Trader:
 
         self.data['Buy Signals'] = self.buy_signals
         self.data['Sell Signals'] = self.sell_signals
-
-        print(self.data)
-
-        # plt.plot(data['Close'], label='Share Price', alpha=0.5)
-        # plt.plot(data[f'SMA_{ma_1}'], label=f'SMA_{ma_1}', color='orange', ls='--')
-        # plt.plot(data[f'SMA_{ma_2}'], label=f'SMA_{ma_2}', color='purple', ls ='--')
-        # plt.scatter(data.index, data['Buy Signals'], label='Buy Signals', marker='^', color='#00ff00', lw=3)
-        # plt.scatter(data.index, data['Sell Signals'], label='Sell Signals', marker='v', color='#ff0000', lw=3)
-        # plt.title(f'Trading Strategy for {company} Stocks')
-        # plt.legend(loc='upper left')
-        # plt.grid(alpha=0.2)
-        # plt.show()
+        
+        self.data.index = pd.to_datetime(self.data.Date)
+        fig, ax = plt.subplots(figsize=(12, 8))
+        ax.plot(data['Close'], label='Share Price', alpha=0.5)
+        ax.plot(data[f'SMA_{ma_1}'], label=f'SMA_{ma_1}', color='orange', ls='--')
+        ax.plot(data[f'SMA_{ma_2}'], label=f'SMA_{ma_2}', color='purple', ls ='--')
+        ax.scatter(data.index, data['Buy Signals'], label='Buy Signals', marker='^', color='#00ff00', lw=3)
+        ax.scatter(data.index, data['Sell Signals'], label='Sell Signals', marker='v', color='#ff0000', lw=3)
+        ax.set_title(f'Trading Strategy for {company} Stocks')
+        ax.legend(loc='upper left')
+        plt.grid(alpha=0.2)
+        plt.show()
 
         # The tutorial ends here. Now lets implement some other things to enhance this algorithm and measure how well it is going.
 
@@ -203,59 +154,39 @@ class Trader:
         print(f'Your total profit was: {TotalProfit} USD\ntogether with the percentege profit: {PercentageProfit}%. \nCongratulations!')
 
         # Plotting the final result
-        # fig, ax = plt.subplots(figsize=(15, 10))
-        # ax.plot(self.data['Close'], label='Share Price', alpha=0.5)
-        # ax.plot(self.data[f'SMA_{ma_1}'], label=f'SMA_{ma_1}', color='orange', ls='--')
-        # ax.plot(self.data[f'SMA_{ma_2}'], label=f'SMA_{ma_2}', color='purple', ls ='--')
-        # ax.scatter(self.data.index, data['Buy Signals'], label='Buy Signals', marker='^', color='#00ff00', lw=3)
-        # ax.scatter(self.data.index, data['Sell Signals'], label='Sell Signals', marker='v', color='#ff0000', lw=3)
-        # # plt.text(x=self.data['Date'].mean(),
-        # #          y=self.data['Close'].max()*.98,
-        # #          s=f'Total Profit per Share: U${TotalProfit} \nPercentage Profit: {PercentageProfit}%')
-        # ax.set_title(f'Trading Strategy for {company} Stocks \nTotal Profit per Share: U${TotalProfit} \nPercentage Profit: {PercentageProfit}%', fontsize='18')
-        # ax.set_xlabel('Date')
-        # ax.set_ylabel(f'Price (US$) || MA {ma_1, ma_2}')
-        #
-        # plt.legend(loc='upper left')
-        # plt.grid(alpha=0.2)
-        # plt.show()
-        # image_name = f'{self.company_name}.png'
-        # fig.savefig('data/' + image_name)
+        self.data.Date = pd.to_datetime(self.data.Date)
+        self.data.index = self.data.Date
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+        ax.plot(self.data['Close'], label='Share Price', alpha=0.5)
+        ax.plot(self.data[f'SMA_{ma_1}'], label=f'SMA_{ma_1}', color='orange', ls='--')
+        ax.plot(self.data[f'SMA_{ma_2}'], label=f'SMA_{ma_2}', color='purple', ls ='--')
+        ax.scatter(self.data.index, data['Buy Signals'], label='Buy Signals', marker='^', color='#00ff00', lw=3)
+        ax.scatter(self.data.index, data['Sell Signals'], label='Sell Signals', marker='v', color='#ff0000', lw=3)
+        #plt.text(x=self.data['Date'].mean(),
+        #          y=self.data['Close'].max()*.98,
+        #          s=f'Total Profit per Share: U${TotalProfit} \nPercentage Profit: {PercentageProfit}%')
+        ax.set_title(f'Trading Strategy for {company} Stocks \nTotal Profit per Share: U${TotalProfit} \nPercentage Profit: {PercentageProfit}%', fontsize='18')
+        ax.set_xlabel('Date')
+        ax.set_ylabel(f'Price (US$)')
+        
+        plt.legend(loc='upper left')
+        plt.grid(alpha=0.2)
+        plt.show()
+        #image_name = f'{self.company_name}.png'
+        #fig.savefig('data/' + image_name)
 
         return company, TotalProfit, PercentageProfit
 
-#msg = config_email(image_name=image_name, text=f"Opa meu amigo! Terminamos aqui a análise do período indicado e temos os seguintes resultados.\n"
-#                       f"'Total Profit per Share: U${TotalProfit} \n"
-#                      f"Percentage Profit: {PercentageProfit}%")
-#send_email(msg)
-
-
 trader = Trader(company)
-data = trader.get_data(company, start, end, ma_1, ma_2)
-# data = trader.get_data_off()
+#data = trader.get_data(company, start, end, ma_1, ma_2)
+data = trader.get_data_offline()
+print("original data", data.info())
 new_data = trader.execute_trading(ma_1, ma_2)
-trader.evaluate_model()
+print("new data", new_data.info())
+results = trader.evaluate_model()
 
 
 #data = get_data(company, start, end)
 
 ## OK, now we now how much profit we got!
-
-# Now it is time to optimize this strategy. What are the "Golden" numbers for the moving averages?
-# We gotta test for a bunch of combinations to see what combination performs better.
-ma_1 = [7, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210]
-ma_2 = [7, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210]
-profits = list()
-Evaluation = pd.DataFrame()
-for j in range(len(ma_1)):
-    for k in range(len(ma_2)):
-        if ma_1[j] == ma_2[k]:
-            pass
-        else:
-            trader = Trader(company)
-            data = trader.get_data(company, start, end, ma_1[j], ma_2[k])
-            data = trader.execute_trading(ma_1[j], ma_2[k])
-            Company, TotalProfit, PercentageProfit = trader.evaluate_model()
-            profits.append(f'{ma_1[j]}, {ma_2[k]}: {TotalProfit}, {PercentageProfit}')
-
-            print(f'{ma_1[j]} and {ma_2[k]}')
