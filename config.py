@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
-import psycopg2
+# import psycopg2
 
 path = 'C:\Program Files (x86)\chromedriver.exe'
 url = 'https://finance.yahoo.com/cryptocurrencies'

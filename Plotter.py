@@ -15,7 +15,7 @@ plt.style.use('dark_background')
 def animate(i):
     j, k = 0, 0
     for l in range(len(symbols)):
-        data = pd.read_csv(f'D:\Projects\DataScience\Finance\MonitoringStocks\data\{symbols[l]}.csv')
+        data = pd.read_csv(f'./data/{symbols[l]}.csv')
 
         # Setting up the variables
         data['Date'] = pd.to_datetime(data['Date'])
